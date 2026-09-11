@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Source Field Model</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #F2F5F6;
+    --bg-panel: #FFFFFF;
+    --bg-tint: #FBFCFD;
+    --ink: #1B222B;
+    --ink-secondary: #545F6B;
+    --ink-muted: #8A94A0;
+    --border: #D3DBE0;
+    --border-strong: #AEBAC2;
+
+    --paid: #0E7C86;
+    --paid-soft: #E4F1F1;
+    --sales: #A9691F;
+    --sales-soft: #F6ECDC;
+    --organic: #4C7A4E;
+    --organic-soft: #E7F0E5;
+    --events: #8B4568;
+    --events-soft: #F5E8EF;
+
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12171D;
+      --bg-panel: #181F26;
+      --bg-tint: #1D252D;
+      --ink: #E8ECEF;
+      --ink-secondary: #A7B1BB;
+      --ink-muted: #6E7986;
+      --border: #2B353E;
+      --border-strong: #3C4750;
+
+      --paid: #56C4CC;
+      --paid-soft: #17333A;
+      --sales: #DBA25C;
+      --sales-soft: #33281A;
+      --organic: #8FBB8E;
+      --organic-soft: #202E22;
+      --events: #D08CAE;
+      --events-soft: #30202B;
+
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12171D;
+    --bg-panel: #181F26;
+    --bg-tint: #1D252D;
+    --ink: #E8ECEF;
+    --ink-secondary: #A7B1BB;
+    --ink-muted: #6E7986;
+    --border: #2B353E;
+    --border-strong: #3C4750;
+
+    --paid: #56C4CC;
+    --paid-soft: #17333A;
+    --sales: #DBA25C;
+    --sales-soft: #33281A;
+    --organic: #8FBB8E;
+    --organic-soft: #202E22;
+    --events: #D08CAE;
+    --events-soft: #30202B;
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 56px 32px 72px;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--paid);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-secondary);
+    max-width: 62ch;
+    margin: 0 0 26px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 7px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12.5px;
+  }
+
+  .meta-item .k {
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-size: 10.5px;
+  }
+
+  .meta-item .v {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--ink);
+  }
+
+  .intro, .transition {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--ink-secondary);
+    max-width: 74ch;
+    margin: 40px 0 28px;
+  }
+
+  .intro strong, .transition strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  figure {
+    margin: 0 0 12px;
+    padding: 28px 28px 22px;
+    background: var(--bg-tint);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+
+  figure svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  figcaption {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-muted);
+  }
+
+  figcaption .fig-label {
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    color: var(--ink-secondary);
+    margin-right: 6px;
+  }
+
+  .section-gap { height: 8px; }
+
+  .provenance {
+    display: inline-block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  .retire-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .retire-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+  }
+
+  .retire-card {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12.5px;
+  }
+
+  .retire-card .retire-old {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .retire-card .retire-arrow {
+    color: var(--ink-muted);
+  }
+
+  .retire-card .retire-new {
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+
+  .retire-card.keep { border-color: var(--organic); background: var(--organic-soft); }
+  .retire-card.keep .retire-old { color: var(--organic); }
+
+  .retire-card.retire .retire-old {
+    color: var(--ink-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--border-strong);
+  }
+
+  .retire-card.conflict { border-color: var(--sales); background: var(--sales-soft); }
+  .retire-card.conflict .retire-old { color: var(--sales); }
+  .retire-card.conflict .retire-new { color: var(--sales); font-weight: 600; }
+
+  .callout {
+    margin: 18px 0 0;
+    padding: 16px 20px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border-strong);
+    border-radius: 8px;
+  }
+
+  .callout h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .callout p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-secondary);
+  }
+
+  .callout p strong { color: var(--ink); font-weight: 600; }
+
+  .callout.flag { border-left-color: var(--sales); }
+  .callout.flag h3 { color: var(--sales); }
+
+  footer {
+    margin-top: 44px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  footer strong { color: var(--ink-secondary); font-weight: 600; }
+
+  @media (max-width: 640px) {
+    .page { padding: 40px 18px 56px; }
+    figure { padding: 18px 14px 16px; border-radius: 10px; }
+  }
+</style>
+
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">Genesee Scientific &middot; Lead Source Framework</p>
+  <h1>Lead Source Field Model</h1>
+  <p class="subtitle">How Source Category, Lead Source, and Lead Source Detail relate to each other, how a UTM-tagged click turns into those field values, and how the old Salesforce source values map into it.</p>
+  <div class="meta">
+    <div class="meta-item"><span class="k">Prepared by</span><span class="v">Rob Walter, Ground Team Solutions</span></div>
+    <div class="meta-item"><span class="k">Status</span><span class="v">Proposed — not yet built</span></div>
+    <div class="meta-item"><span class="k">Updated</span><span class="v">2026&#8209;09&#8209;10</span></div>
+  </div>
+
+  <p class="intro">The framework has three levels. <strong>Source Category</strong> is the reporting rollup. <strong>Lead Source</strong> is the specific channel — a 17‑value closed list, shown below grouped under its category. <strong>Lead Source Detail</strong> is the free‑text layer underneath each one; Figure 3 shows how it gets filled in without turning into another list to maintain. Figure 2 shows the piece in between: how a UTM-tagged click becomes those field values in the first place.</p>
+
+  <figure>
+    <svg viewBox="0 0 1340 410" role="img" aria-label="Diagram showing four Source Category values — Sales, Organic, Paid Media, Events — each branching down to its set of Lead Source values, seventeen in total.">
+      <defs>
+        <marker id="tick" viewBox="0 0 4 4" refX="2" refY="2" markerWidth="4" markerHeight="4">
+          <circle cx="2" cy="2" r="1.6" fill="currentColor" />
+        </marker>
+      </defs>
+
+      <text x="16" y="40" transform="rotate(-90 16 40)" text-anchor="middle" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="12.5" letter-spacing="0.06em" fill="var(--ink-muted)">SOURCE CATEGORY</text>
+      <text x="16" y="223" transform="rotate(-90 16 223)" text-anchor="middle" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="12.5" letter-spacing="0.06em" fill="var(--ink-muted)">LEAD SOURCE</text>
+      <line x1="30" y1="20" x2="30" y2="60" stroke="var(--border)" stroke-width="1"/>
+      <line x1="30" y1="76" x2="30" y2="370" stroke="var(--border)" stroke-width="1"/>
+
+      <g transform="translate(40,0)">
+      <!-- Column: Sales -->
+      <g>
+        <rect x="20" y="20" width="290" height="40" rx="8" fill="var(--sales-soft)" stroke="var(--sales)" stroke-width="1.5"/>
+        <text x="165" y="45" text-anchor="middle" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--sales)">SALES</text>
+
+        <line x1="38" y1="60" x2="38" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <line x1="38" y1="90" x2="54" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="54" y="76" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="64" y="94" font-size="13.5" fill="var(--ink)">Prospecting (Outbound)</text>
+
+        <line x1="38" y1="90" x2="38" y2="128" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <line x1="38" y1="128" x2="54" y2="128" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="54" y="114" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="64" y="132" font-size="13.5" fill="var(--ink)">Channel / Partner</text>
+      </g>
+
+      <!-- Column: Organic -->
+      <g>
+        <rect x="340" y="20" width="290" height="40" rx="8" fill="var(--organic-soft)" stroke="var(--organic)" stroke-width="1.5"/>
+        <text x="485" y="45" text-anchor="middle" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--organic)">ORGANIC</text>
+
+        <line x1="358" y1="60" x2="358" y2="318" stroke="var(--border-strong)" stroke-width="1.5"/>
+
+        <g font-size="13.5" fill="var(--ink)">
+          <line x1="358" y1="90" x2="374" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="76" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="94">Website</text>
+
+          <line x1="358" y1="128" x2="374" y2="128" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="114" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="132">Organic Social</text>
+
+          <line x1="358" y1="166" x2="374" y2="166" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="152" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="170">Press Release</text>
+
+          <line x1="358" y1="204" x2="374" y2="204" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="190" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="208">Organic List</text>
+
+          <line x1="358" y1="242" x2="374" y2="242" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="228" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="246">In-Platform</text>
+
+          <line x1="358" y1="280" x2="374" y2="280" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="266" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="284">Employee Referral</text>
+
+          <line x1="358" y1="318" x2="374" y2="318" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="374" y="304" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="384" y="322">Customer Referral</text>
+        </g>
+      </g>
+
+      <!-- Column: Paid Media -->
+      <g>
+        <rect x="660" y="20" width="290" height="40" rx="8" fill="var(--paid-soft)" stroke="var(--paid)" stroke-width="1.5"/>
+        <text x="805" y="45" text-anchor="middle" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--paid)">PAID MEDIA</text>
+
+        <line x1="678" y1="60" x2="678" y2="280" stroke="var(--border-strong)" stroke-width="1.5"/>
+
+        <g font-size="13.5" fill="var(--ink)">
+          <line x1="678" y1="90" x2="694" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="694" y="76" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="704" y="94">Paid Search</text>
+
+          <line x1="678" y1="128" x2="694" y2="128" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="694" y="114" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="704" y="132">Paid Social</text>
+
+          <line x1="678" y1="166" x2="694" y2="166" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="694" y="152" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="704" y="170">Purchased List</text>
+
+          <line x1="678" y1="204" x2="694" y2="204" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="694" y="190" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="704" y="208">Webinars</text>
+
+          <line x1="678" y1="242" x2="694" y2="242" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="694" y="228" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="704" y="246">Display</text>
+
+          <line x1="678" y1="280" x2="694" y2="280" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="694" y="266" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+          <text x="704" y="284">Pay-Per-Lead</text>
+        </g>
+      </g>
+
+      <!-- Column: Events -->
+      <g>
+        <rect x="980" y="20" width="290" height="40" rx="8" fill="var(--events-soft)" stroke="var(--events)" stroke-width="1.5"/>
+        <text x="1125" y="45" text-anchor="middle" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--events)">EVENTS</text>
+
+        <line x1="998" y1="60" x2="998" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <line x1="998" y1="90" x2="1014" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="1014" y="76" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="1024" y="94" font-size="13.5" fill="var(--ink)">Tradeshow</text>
+
+        <line x1="998" y1="90" x2="998" y2="128" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <line x1="998" y1="128" x2="1014" y2="128" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="1014" y="114" width="236" height="28" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="1024" y="132" font-size="13.5" fill="var(--ink)">Conference</text>
+      </g>
+      </g>
+    </svg>
+    <figcaption><span class="fig-label">Figure 1</span>Source Category (4 values) and the 17 Lead Source values that roll up to each. The panel below shows how the old Salesforce source values map into it.</figcaption>
+  </figure>
+
+  <figure>
+    <svg viewBox="0 0 1280 460" role="img" aria-label="Diagram showing how a UTM-tagged link click becomes Lead Source field values: the tagged link, a HubSpot tracking cookie, a tracked form submission, six UTM properties written to the Contact, a translation workflow that has not been built yet, and its two outputs — Source Category and Lead Source, plus Lead Source Detail, which is flagged as an open decision.">
+      <defs>
+        <marker id="utmArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"/>
+        </marker>
+        <marker id="utmArrowSolid" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--paid)"/>
+        </marker>
+      </defs>
+
+      <!-- Row A: capture pipeline -->
+      <rect x="20" y="40" width="260" height="68" rx="8" fill="var(--bg-panel)" stroke="var(--border)"/>
+      <text x="34" y="60" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="12.5" letter-spacing="0.04em" fill="var(--ink-secondary)">TAGGED LINK</text>
+      <text x="34" y="80" font-family="IBM Plex Mono" font-size="11.5" fill="var(--ink)">utm_source=linkedin</text>
+      <text x="34" y="96" font-family="IBM Plex Mono" font-size="11.5" fill="var(--ink)">utm_medium=paid_social</text>
+
+      <line x1="280" y1="74" x2="316" y2="74" stroke="var(--border-strong)" stroke-width="1.5" marker-end="url(#utmArrow)"/>
+
+      <rect x="320" y="40" width="260" height="68" rx="8" fill="var(--bg-panel)" stroke="var(--border)"/>
+      <text x="334" y="60" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="12.5" letter-spacing="0.04em" fill="var(--ink-secondary)">CLICK</text>
+      <text x="334" y="80" font-size="12.5" fill="var(--ink)">HubSpot tracking cookie</text>
+      <text x="334" y="96" font-size="12.5" fill="var(--ink)">set in the browser</text>
+
+      <line x1="580" y1="74" x2="616" y2="74" stroke="var(--border-strong)" stroke-width="1.5" marker-end="url(#utmArrow)"/>
+
+      <rect x="620" y="40" width="260" height="68" rx="8" fill="var(--bg-panel)" stroke="var(--border)"/>
+      <text x="634" y="60" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="12.5" letter-spacing="0.04em" fill="var(--ink-secondary)">TRACKED FORM SUBMISSION</text>
+      <text x="634" y="80" font-size="12.5" fill="var(--ink)">on a page carrying</text>
+      <text x="634" y="96" font-size="12.5" fill="var(--ink)">HubSpot's tracking code</text>
+
+      <line x1="880" y1="74" x2="916" y2="74" stroke="var(--border-strong)" stroke-width="1.5" marker-end="url(#utmArrow)"/>
+
+      <rect x="920" y="40" width="340" height="136" rx="8" fill="var(--paid-soft)" stroke="var(--paid)" stroke-width="1.5"/>
+      <text x="934" y="60" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="12.5" letter-spacing="0.04em" fill="var(--paid)">UTM PROPERTIES SET ON CONTACT</text>
+      <g font-family="IBM Plex Mono" font-size="11" fill="var(--ink)">
+        <rect x="934" y="68" width="140" height="26" rx="5" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="944" y="85">utm_source</text>
+        <rect x="1096" y="68" width="150" height="26" rx="5" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="1106" y="85">utm_medium</text>
+        <rect x="934" y="104" width="140" height="26" rx="5" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="944" y="121">utm_campaign</text>
+        <rect x="1096" y="104" width="150" height="26" rx="5" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="1106" y="121">utm_term</text>
+        <rect x="934" y="140" width="140" height="26" rx="5" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="944" y="157">utm_content</text>
+        <rect x="1096" y="140" width="150" height="26" rx="5" fill="var(--bg-tint)" stroke="var(--sales)" stroke-dasharray="3 3"/>
+        <text x="1106" y="157" fill="var(--sales)">utm_audience &#8211; TBD</text>
+      </g>
+
+      <!-- down to translation -->
+      <line x1="1090" y1="176" x2="1090" y2="210" stroke="var(--border-strong)" stroke-width="1.5" marker-end="url(#utmArrow)"/>
+
+      <rect x="820" y="214" width="440" height="60" rx="8" fill="var(--bg-tint)" stroke="var(--ink-muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="1040" y="240" text-anchor="middle" font-weight="700" font-size="15.5" fill="var(--ink)">Translation workflow / lookup</text>
+      <text x="1040" y="258" text-anchor="middle" font-size="12" fill="var(--ink-muted)">not yet built &mdash; mapping table still to be drafted</text>
+
+      <line x1="960" y1="274" x2="820" y2="316" stroke="var(--paid)" stroke-width="2" marker-end="url(#utmArrowSolid)"/>
+      <line x1="1160" y1="274" x2="1160" y2="316" stroke="var(--ink-muted)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#utmArrow)"/>
+
+      <rect x="560" y="320" width="400" height="112" rx="8" fill="var(--bg-panel)" stroke="var(--paid)" stroke-width="1.5"/>
+      <text x="580" y="344" font-weight="700" font-size="15.5" fill="var(--paid)">Source Category + Lead Source</text>
+      <g font-family="IBM Plex Mono" font-size="11.5" fill="var(--ink-secondary)">
+        <text x="580" y="368">utm_medium=paid_social &#8594; Paid Media / Paid Social</text>
+        <text x="580" y="388">utm_medium=tradeshow_booth &#8594; Events / Tradeshow</text>
+      </g>
+      <text x="580" y="412" font-size="11.5" fill="var(--ink-muted)">illustrative &mdash; full mapping table not yet drafted</text>
+
+      <rect x="980" y="320" width="280" height="92" rx="8" fill="var(--bg-panel)" stroke="var(--sales)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="998" y="344" font-weight="700" font-size="15.5" fill="var(--sales)">Lead Source Detail</text>
+      <text x="998" y="364" font-size="12" fill="var(--ink-secondary)">form name, or</text>
+      <text x="998" y="380" font-size="12" fill="var(--ink-secondary)"><tspan font-family="IBM Plex Mono">utm_campaign</tspan>?</text>
+      <text x="998" y="398" font-size="11" fill="var(--sales)">&#9888; open decision &mdash; see callout below</text>
+    </svg>
+    <figcaption><span class="fig-label">Figure 2</span>How a UTM-tagged click becomes a Lead Source value. Not live yet: no contact-creation path carries UTM data today, and the translation workflow itself hasn't been built. This shows the target mechanism, not the current state.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="retire-head">
+      <span class="fig-label" style="margin:0;">Taxonomy mapping — retire &amp; consolidate</span>
+    </div>
+    <div class="retire-grid">
+      <div class="retire-card retire">
+        <span class="retire-old">Marketing Campaign</span>
+        <span class="retire-arrow">&#8594;</span>
+        <span class="retire-new">Retired as a catch-all — sources get categorized by their actual channel instead.</span>
+      </div>
+      <div class="retire-card retire">
+        <span class="retire-old">Vendor</span>
+        <span class="retire-arrow">&#8594;</span>
+        <span class="retire-new">Retired — maps to the appropriate Channel / Partner value.</span>
+      </div>
+      <div class="retire-card retire">
+        <span class="retire-old">Third-Party Prospecting Data</span>
+        <span class="retire-arrow">&#8594;</span>
+        <span class="retire-new">Retired &#8594; <strong>Sales &gt; Prospecting (Outbound)</strong>.</span>
+      </div>
+      <div class="retire-card retire">
+        <span class="retire-old">Customer Service</span>
+        <span class="retire-arrow">&#8594;</span>
+        <span class="retire-new">Retired — folded into whichever source it would otherwise belong to.</span>
+      </div>
+      <div class="retire-card keep">
+        <span class="retire-old">Trade Show</span>
+        <span class="retire-arrow">&#8594;</span>
+        <span class="retire-new">Kept as-is — still its own Events &gt; Tradeshow value.</span>
+      </div>
+      <div class="retire-card keep">
+        <span class="retire-old">Other</span>
+        <span class="retire-arrow">&#8594;</span>
+        <span class="retire-new">Kept — true catch-all only, when nothing else fits.</span>
+      </div>
+    </div>
+  </figure>
+
+  <p class="transition">For each of those 17 values, <strong>Lead Source Detail</strong> stays a text field rather than a picklist — but most of it never gets hand-typed. Where a clean value already exists somewhere in HubSpot, a workflow copies it in. Only the sources with nothing upstream to pull from get typed by hand, and five sources still need this mapping worked out.</p>
+
+  <figure>
+    <svg viewBox="0 0 1280 520" role="img" aria-label="Diagram showing three ways Lead Source Detail gets filled in: nine sources auto-populated from existing HubSpot and Salesforce data, three low-volume sources typed by hand, and five sources not yet mapped, all feeding into the Lead Source Detail text field, which is paired with a separate closed Content Type picklist. What populates the System-Populated lane for form-converting sources is still an open question, detailed in the callout below the figure.">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"/>
+        </marker>
+        <marker id="arrowSolid" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--paid)"/>
+        </marker>
+      </defs>
+
+      <!-- Lane 1: System-populated -->
+      <rect x="30" y="20" width="380" height="330" rx="10" fill="var(--paid-soft)" stroke="var(--paid)" stroke-width="1.5"/>
+      <text x="50" y="48" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--paid)">SYSTEM-POPULATED</text>
+      <text x="50" y="68" font-size="13.5" fill="var(--ink-secondary)">pulled automatically — nothing to maintain</text>
+      <line x1="50" y1="80" x2="390" y2="80" stroke="var(--border)"/>
+
+      <g font-family="IBM Plex Mono" font-size="12" fill="var(--paid)">
+        <rect x="50" y="100" width="340" height="64" rx="6" fill="var(--bg-panel)" stroke="var(--sales)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="392" y="112" text-anchor="end" font-family="IBM Plex Sans" font-size="15.5" fill="var(--sales)">&#9888;<title>What populates Lead Source Detail here is still open — see the callout below the figure.</title></text>
+        <text x="62" y="118">hs_form_name (form converted on)</text>
+        <text x="62" y="136" font-family="IBM Plex Sans" font-size="12.5" fill="var(--ink)">&#8594; Website, Paid Search, Paid Social,</text>
+        <text x="62" y="150" font-family="IBM Plex Sans" font-size="12.5" fill="var(--ink)">&#160;&#160;Webinars, Display</text>
+
+        <rect x="50" y="174" width="340" height="48" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="62" y="192">[TS] event key</text>
+        <text x="62" y="210" font-family="IBM Plex Sans" font-size="12.5" fill="var(--ink)">&#8594; Tradeshow, Conference</text>
+
+        <rect x="50" y="232" width="340" height="48" rx="6" fill="var(--bg-panel)" stroke="var(--border)"/>
+        <text x="62" y="250">campaign / company record</text>
+        <text x="62" y="268" font-family="IBM Plex Sans" font-size="12.5" fill="var(--ink)">&#8594; Purchased List, Pay-Per-Lead</text>
+      </g>
+
+      <!-- Lane 2: Hand-typed -->
+      <rect x="450" y="20" width="380" height="330" rx="10" fill="var(--bg-panel)" stroke="var(--border-strong)" stroke-width="1.5"/>
+      <text x="470" y="48" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--ink-secondary)">HAND-TYPED</text>
+      <text x="470" y="68" font-size="13.5" fill="var(--ink-secondary)">low volume &mdash; typed at lead creation</text>
+      <line x1="470" y1="80" x2="810" y2="80" stroke="var(--border)"/>
+
+      <g font-size="13.5" fill="var(--ink)">
+        <rect x="470" y="100" width="340" height="32" rx="6" fill="var(--bg-tint)" stroke="var(--border)"/>
+        <text x="482" y="121">Employee Referral</text>
+        <rect x="470" y="142" width="340" height="32" rx="6" fill="var(--bg-tint)" stroke="var(--border)"/>
+        <text x="482" y="163">Customer Referral</text>
+        <rect x="470" y="184" width="340" height="32" rx="6" fill="var(--bg-tint)" stroke="var(--border)"/>
+        <text x="482" y="205">Channel / Partner</text>
+      </g>
+
+      <!-- Lane 3: Not yet mapped -->
+      <rect x="870" y="20" width="380" height="330" rx="10" fill="var(--bg-tint)" stroke="var(--ink-muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="890" y="48" font-family="IBM Plex Sans Condensed" font-weight="700" font-size="15.5" letter-spacing="0.04em" fill="var(--ink-muted)">NOT YET MAPPED</text>
+      <text x="890" y="68" font-size="13.5" fill="var(--ink-secondary)">open item &mdash; needs a decision today</text>
+      <line x1="890" y1="80" x2="1230" y2="80" stroke="var(--border)"/>
+
+      <g font-size="13.5" fill="var(--ink-secondary)">
+        <rect x="890" y="100" width="340" height="30" rx="6" fill="var(--bg-panel)" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <text x="902" y="120">Prospecting (Outbound)</text>
+        <rect x="890" y="138" width="340" height="30" rx="6" fill="var(--bg-panel)" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <text x="902" y="158">Organic Social</text>
+        <rect x="890" y="176" width="340" height="30" rx="6" fill="var(--bg-panel)" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <text x="902" y="196">Press Release</text>
+        <rect x="890" y="214" width="340" height="30" rx="6" fill="var(--bg-panel)" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <text x="902" y="234">Organic List</text>
+        <rect x="890" y="252" width="340" height="30" rx="6" fill="var(--bg-panel)" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <text x="902" y="272">In-Platform</text>
+      </g>
+
+      <!-- Convergence arrows -->
+      <line x1="220" y1="350" x2="440" y2="404" stroke="var(--paid)" stroke-width="2" marker-end="url(#arrowSolid)"/>
+      <line x1="640" y1="350" x2="640" y2="404" stroke="var(--ink-muted)" stroke-width="2" marker-end="url(#arrow)"/>
+      <line x1="1060" y1="350" x2="840" y2="404" stroke="var(--ink-muted)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrow)"/>
+
+      <!-- Detail field -->
+      <rect x="300" y="410" width="650" height="66" rx="10" fill="var(--bg-panel)" stroke="var(--ink)" stroke-width="1.75"/>
+      <text x="625" y="436" text-anchor="middle" font-weight="700" font-size="17" fill="var(--ink)">Lead Source Detail</text>
+      <text x="625" y="458" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="var(--ink-muted)">text field &middot; no picklist to maintain</text>
+
+      <!-- Content Type companion -->
+      <line x1="950" y1="443" x2="990" y2="443" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <rect x="990" y="410" width="260" height="80" rx="10" fill="var(--bg-tint)" stroke="var(--border-strong)" stroke-width="1.5"/>
+      <text x="1120" y="434" text-anchor="middle" font-weight="700" font-size="15.5" fill="var(--ink)">Content Type</text>
+      <text x="1120" y="452" text-anchor="middle" font-size="12" fill="var(--ink-secondary)">paired field &middot; closed picklist</text>
+      <text x="1120" y="472" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-muted)">eBook &middot; Webinar &middot; Demo &middot; Ad &middot; List</text>
+    </svg>
+    <figcaption><span class="fig-label">Figure 3</span>How Lead Source Detail gets populated for each of the 17 sources above. Nine pull automatically from data HubSpot or the Trade Show Tracker already capture — though what feeds the top box (&#9888;) is still open, see below; three low-volume sources stay hand-typed; five (dashed) still need this mapping decided.</figcaption>
+  </figure>
+
+  <div class="callout flag">
+    <h3>Still open: what goes in Lead Source Detail?</h3>
+    <p>For the five System-Populated, form-driven sources above (Website, Paid Search, Paid Social, Webinars, Display), a few options are on the table: the name of the form someone converted on, the <code>utm_campaign</code> value when one is present, or both — with a separate <strong>Most Recent Campaign</strong> field so neither gets lost. Figure 3 currently shows the form-name option; nothing is decided yet.</p>
+  </div>
+
+  <footer>
+    This is a proposed model, not yet built. <strong>Still open:</strong> which HubSpot portal to build in, what Lead Source Detail should hold for form-driven sources (flagged above), and the five Lead Source values that still need a Detail mapping worked out (dashed, in Figure 3).
+  </footer>
+</div>
+
+</body>
+</html>
