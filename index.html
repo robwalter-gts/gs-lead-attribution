@@ -287,6 +287,47 @@
   tr:last-child td { border-bottom: 0; }
   .tbl-wrap { overflow-x: auto; }
   .tbl-wrap table { min-width: 560px; }
+  .tbl-wrap table.wide { min-width: 820px; }
+  .tbl-wrap table.wide th:last-child, .tbl-wrap table.wide td:last-child { min-width: 250px; padding-right: 0; }
+  .so-choice { display: flex; gap: 8px; flex-wrap: wrap; }
+  .so-choice label { position: relative; cursor: pointer; }
+  .so-choice input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .so-choice span {
+    display: inline-block; padding: 5px 14px; border-radius: 999px;
+    border: 1.5px solid var(--border-strong); background: var(--bg-panel);
+    font-size: 12.5px; font-weight: 600; color: var(--ink-secondary);
+  }
+  .so-choice input:checked + span.yes { border-color: var(--keep); color: var(--keep); background: var(--keep-soft); }
+  .so-choice input:checked + span.chg { border-color: var(--open); color: var(--open); background: var(--open-soft); }
+  .so-choice input:focus-visible + span { outline: 2px solid var(--web); outline-offset: 2px; }
+  .so-field, .so-note, .so-area {
+    width: 100%; font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--bg-panel); border: 1.5px solid var(--border-strong); border-radius: 6px; padding: 8px 10px;
+  }
+  .so-note { margin-top: 8px; min-height: 76px; resize: vertical; line-height: 1.5; }
+  .so-area { min-height: 70px; resize: vertical; line-height: 1.5; }
+  .so-field:focus, .so-note:focus, .so-area:focus { outline: 2px solid var(--web); outline-offset: 1px; }
+  .so-send { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border); display: grid; gap: 14px; max-width: 640px; }
+  .so-send label.lbl { display: block; margin-bottom: 6px; font-family: var(--cond); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
+  .so-btns { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .so-btn {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    padding: 10px 18px; border-radius: 8px; border: 1.5px solid var(--web);
+    background: var(--web); color: var(--bg-panel);
+  }
+  .so-btn.alt { background: var(--bg-panel); color: var(--web); }
+  .so-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .so-status { min-height: 1.4em; margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-secondary); }
+  .so-progress { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .so-progress.done { color: var(--ok, var(--ink)); }
+  .so-status.err { color: var(--open); font-weight: 600; }
+  details.so-prev summary { cursor: pointer; font-size: 13.5px; color: var(--ink-secondary); }
+  details.so-prev textarea { margin-top: 10px; min-height: 180px; font-family: var(--mono); font-size: 12.5px; }
+  @media (max-width: 640px) { .so-field, .so-note, .so-area { font-size: 16px; } }
+  .vals { display: flex; flex-wrap: wrap; gap: 6px; }
+  .vals span { display: inline-block; padding: 3px 10px; border: 1px solid var(--border-strong); border-radius: 999px; font-size: 13px; color: var(--ink); background: var(--bg-panel); white-space: nowrap; }
+  .note-line { margin: 16px 0 0; font-size: 14px; line-height: 1.6; color: var(--ink-secondary); max-width: 80ch; }
+  .note-line strong { color: var(--ink); font-weight: 600; }
 
   .retire-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 10px; }
   .retire-card {
@@ -354,90 +395,92 @@
   }
 </style>
 
-</head>
-<body>
 <div class="page">
   <p class="eyebrow">Genesee Scientific &middot; Lead Source Framework</p>
   <h1>Lead Source Field Model</h1>
   <p class="subtitle">A proposed design for how leads get a Lead Source and Lead Source Detail, how that reaches sales, and how it connects to campaigns.</p>
   <div class="meta">
     <div class="meta-item"><span class="k">Prepared by</span><span class="v">Rob Walter, Ground Team Solutions</span></div>
-    <div class="meta-item"><span class="k">Status</span><span class="v">Proposed &mdash; not built</span></div>
+    <div class="meta-item"><span class="k">Status</span><span class="v">Proposed, not built. Lead Source list awaiting sign-off</span></div>
     <div class="meta-item"><span class="k">Updated</span><span class="v">2026&#8209;10&#8209;14</span></div>
   </div>
 
-  <p class="intro">The model has two fields. <strong>Lead Source</strong> is the specific channel, chosen from a closed list. <strong>Lead Source Detail</strong> is a proposed picklist that adds one more level of detail, so reports can filter by picking a value instead of matching exact text. The earlier Category level is removed. Campaign stays separate from both. Everything on this page is a proposal. Amber dashed items are open or not built.</p>
+  <p class="intro">The model has two fields. <strong>Lead Source</strong> is the specific channel, chosen from a closed list. <strong>Lead Source Detail</strong> is a picklist, a decided part of the model, that adds one more level of detail, so reports can filter by picking a value instead of matching exact text. The earlier Category level is removed. Campaign stays separate from both. Everything on this page is a proposal. Amber dashed items are open or not built.</p>
 
   <!-- ============ 1. LEAD SOURCE ============ -->
   <section class="sec">
     <h2>Lead Source</h2>
-    <p class="lead">Lead Source is now a standalone list. Without Category, some values lose the grouping that gave them part of their meaning, so they are flagged for review. No replacement values are proposed.</p>
+    <p class="lead">Lead Source is a standalone list. Without Category, a few values need a clearer name or definition. Below is a proposed final list of 17 values for sign-off, with a recommendation for each value that changes.</p>
 
     <figure>
       <div class="scroll">
-        <svg viewBox="0 0 1280 304" role="img" aria-label="The Lead Source list shown as one flat set of eighteen values: the seventeen values from the current framework plus Other. Conference and Tradeshow carry flag A, Display, Organic List, Pay-Per-Lead, Purchased List and Webinars carry flag B, and Other carries flag C. Flags mark values that need review.">
+        <svg viewBox="0 0 1280 304" role="img" aria-label="The proposed final Lead Source list, 17 values. Unchanged: Channel / Partner, Customer Referral, Employee Referral, In-Platform, Organic List, Organic Social, Paid Search, Paid Social, Pay-Per-Lead, Press Release, Prospecting (Outbound), Purchased List, Webinars and Website. Changed in this proposal: Tradeshow, which absorbs Conference; Paid Display, renamed from Display; and Other, added as the catch-all. Pending sign-off.">
       <rect class="bx" x="15" y="18" width="290" height="42" rx="8"/>
       <text class="s-b" x="31" y="45">Channel / Partner</text>
-      <rect class="bx-open" x="335" y="18" width="290" height="42" rx="8"/>
-      <text class="s-b" x="351" y="45">Conference</text>
-      <circle class="flag-c" cx="597" cy="39" r="12"/>
-      <text class="s-flag" x="597" y="44" text-anchor="middle">A</text>
+      <rect class="bx" x="335" y="18" width="290" height="42" rx="8"/>
+      <text class="s-b" x="351" y="45">Customer Referral</text>
       <rect class="bx" x="655" y="18" width="290" height="42" rx="8"/>
-      <text class="s-b" x="671" y="45">Customer Referral</text>
-      <rect class="bx-open" x="975" y="18" width="290" height="42" rx="8"/>
-      <text class="s-b" x="991" y="45">Display</text>
-      <circle class="flag-c" cx="1237" cy="39" r="12"/>
-      <text class="s-flag" x="1237" y="44" text-anchor="middle">B</text>
+      <text class="s-b" x="671" y="45">Employee Referral</text>
+      <rect class="bx" x="975" y="18" width="290" height="42" rx="8"/>
+      <text class="s-b" x="991" y="45">In-Platform</text>
       <rect class="bx" x="15" y="74" width="290" height="42" rx="8"/>
-      <text class="s-b" x="31" y="101">Employee Referral</text>
+      <text class="s-b" x="31" y="101">Organic List</text>
       <rect class="bx" x="335" y="74" width="290" height="42" rx="8"/>
-      <text class="s-b" x="351" y="101">In-Platform</text>
+      <text class="s-b" x="351" y="101">Organic Social</text>
       <rect class="bx-open" x="655" y="74" width="290" height="42" rx="8"/>
-      <text class="s-b" x="671" y="101">Organic List</text>
-      <circle class="flag-c" cx="917" cy="95" r="12"/>
-      <text class="s-flag" x="917" y="100" text-anchor="middle">B</text>
-      <rect class="bx" x="975" y="74" width="290" height="42" rx="8"/>
-      <text class="s-b" x="991" y="101">Organic Social</text>
-      <rect class="bx-open" x="15" y="130" width="290" height="42" rx="8"/>
-      <text class="s-b" x="31" y="157">Other</text>
-      <circle class="flag-c" cx="277" cy="151" r="12"/>
-      <text class="s-flag" x="277" y="156" text-anchor="middle">C</text>
+      <text class="s-b" x="671" y="101">Other</text>
+      <text class="s-s c-open" x="931" y="101" text-anchor="end">added</text>
+      <rect class="bx-open" x="975" y="74" width="290" height="42" rx="8"/>
+      <text class="s-b" x="991" y="101">Paid Display</text>
+      <text class="s-s c-open" x="1251" y="101" text-anchor="end">renamed from Display</text>
+      <rect class="bx" x="15" y="130" width="290" height="42" rx="8"/>
+      <text class="s-b" x="31" y="157">Paid Search</text>
       <rect class="bx" x="335" y="130" width="290" height="42" rx="8"/>
-      <text class="s-b" x="351" y="157">Paid Search</text>
+      <text class="s-b" x="351" y="157">Paid Social</text>
       <rect class="bx" x="655" y="130" width="290" height="42" rx="8"/>
-      <text class="s-b" x="671" y="157">Paid Social</text>
-      <rect class="bx-open" x="975" y="130" width="290" height="42" rx="8"/>
-      <text class="s-b" x="991" y="157">Pay-Per-Lead</text>
-      <circle class="flag-c" cx="1237" cy="151" r="12"/>
-      <text class="s-flag" x="1237" y="156" text-anchor="middle">B</text>
+      <text class="s-b" x="671" y="157">Pay-Per-Lead</text>
+      <rect class="bx" x="975" y="130" width="290" height="42" rx="8"/>
+      <text class="s-b" x="991" y="157">Press Release</text>
       <rect class="bx" x="15" y="186" width="290" height="42" rx="8"/>
-      <text class="s-b" x="31" y="213">Press Release</text>
+      <text class="s-b" x="31" y="213">Prospecting (Outbound)</text>
       <rect class="bx" x="335" y="186" width="290" height="42" rx="8"/>
-      <text class="s-b" x="351" y="213">Prospecting (Outbound)</text>
+      <text class="s-b" x="351" y="213">Purchased List</text>
       <rect class="bx-open" x="655" y="186" width="290" height="42" rx="8"/>
-      <text class="s-b" x="671" y="213">Purchased List</text>
-      <circle class="flag-c" cx="917" cy="207" r="12"/>
-      <text class="s-flag" x="917" y="212" text-anchor="middle">B</text>
-      <rect class="bx-open" x="975" y="186" width="290" height="42" rx="8"/>
-      <text class="s-b" x="991" y="213">Tradeshow</text>
-      <circle class="flag-c" cx="1237" cy="207" r="12"/>
-      <text class="s-flag" x="1237" y="212" text-anchor="middle">A</text>
-      <rect class="bx-open" x="15" y="242" width="290" height="42" rx="8"/>
-      <text class="s-b" x="31" y="269">Webinars</text>
-      <circle class="flag-c" cx="277" cy="263" r="12"/>
-      <text class="s-flag" x="277" y="268" text-anchor="middle">B</text>
-      <rect class="bx" x="335" y="242" width="290" height="42" rx="8"/>
-      <text class="s-b" x="351" y="269">Website</text>
+      <text class="s-b" x="671" y="213">Tradeshow</text>
+      <text class="s-s c-open" x="931" y="213" text-anchor="end">absorbs Conference</text>
+      <rect class="bx" x="975" y="186" width="290" height="42" rx="8"/>
+      <text class="s-b" x="991" y="213">Webinars</text>
+      <rect class="bx" x="15" y="242" width="290" height="42" rx="8"/>
+      <text class="s-b" x="31" y="269">Website</text>
         </svg>
       </div>
-      <figcaption><span class="fig-label">Figure 1</span>Lead Source as one flat list: the 17 values from the current framework, plus Other. Amber dashed values need review before the list is final.</figcaption>
+      <figcaption><span class="fig-label">Figure 1</span>Proposed final Lead Source list: 17 values. Solid values are unchanged from the current framework. Amber dashed values are changed in this proposal. Pending sign-off.</figcaption>
     </figure>
 
-    <ul class="notes">
-      <li><b class="flag">A</b><span><strong>Tradeshow, Conference.</strong> The Detail example is &ldquo;Trade Show&rdquo;, with the specific event identified by campaign. That overlaps with these two Lead Source values. Decide which level says &ldquo;trade show&rdquo;.</span></li>
-      <li><b class="flag">B</b><span><strong>Display, Organic List, Pay-Per-Lead, Purchased List, Webinars.</strong> These sat under Paid Media or Organic, which supplied part of their meaning. Check that each name still stands on its own, for example whether Webinars means paid or organic.</span></li>
-      <li><b class="flag">C</b><span><strong>Other.</strong> Kept as the catch-all in the old-value mapping below, but it was never part of the 17-value list. Confirm it is a Lead Source value.</span></li>
-    </ul>
+    <div class="panel" style="margin-top:18px;">
+      <h3>For sign-off</h3>
+      <p>One row for each value that changes or needs a definition, plus the old Website Inquiry value. The other ten values are kept as they are. Choose Approve or Change for each row, then send your answers with the button below the table.</p>
+      <div class="tbl-wrap">
+        <table class="wide">
+          <thead><tr><th>Value</th><th>Proposal</th><th>Reason</th><th>Sign-off</th></tr></thead>
+          <tbody>
+            <tr data-so="1" data-label="Tradeshow, Conference" data-prop="Merge"><td>Tradeshow, Conference</td><td><span class="chip">Merge</span></td><td>Tradeshow is defined as shows, exhibitions and booths, and Conference as professional, scientific, industry or association conferences. Merging keeps one Events value: Detail carries the kind of event, for example Trade Show or Conference, and the campaign names the specific event.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Tradeshow, Conference"><label><input type="radio" name="so1" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so1" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note1" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Tradeshow, Conference" hidden></textarea></td></tr>
+            <tr data-so="2" data-label="Display" data-prop="Rename Paid Display"><td>Display</td><td><span class="chip">Rename</span> Paid Display</td><td>Defined as paid display, banner, programmatic or retargeting ads outside GSC&rsquo;s website. Paid Display matches Paid Search and Paid Social and says it is paid, which the removed Category used to say.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Display"><label><input type="radio" name="so2" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so2" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note2" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Display" hidden></textarea></td></tr>
+            <tr data-so="3" data-label="Organic List" data-prop="Keep"><td>Organic List</td><td><span class="chip ok">Keep</span></td><td>Defined as a list GSC built itself or has permission to use, not purchased. It is the counterpart to Purchased List. Use only when the list&rsquo;s origin and permission are documented.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Organic List"><label><input type="radio" name="so3" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so3" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note3" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Organic List" hidden></textarea></td></tr>
+            <tr data-so="4" data-label="Purchased List" data-prop="Keep"><td>Purchased List</td><td><span class="chip ok">Keep</span></td><td>Defined as a purchased or licensed marketing contact list. Sales-only prospecting lists go to Prospecting (Outbound), not here.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Purchased List"><label><input type="radio" name="so4" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so4" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note4" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Purchased List" hidden></textarea></td></tr>
+            <tr data-so="5" data-label="Pay-Per-Lead" data-prop="Keep"><td>Pay-Per-Lead</td><td><span class="chip ok">Keep</span></td><td>No definition exists yet. Proposed: leads a vendor delivers and is paid for per lead, as opposed to a list bought in bulk.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Pay-Per-Lead"><label><input type="radio" name="so5" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so5" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note5" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Pay-Per-Lead" hidden></textarea></td></tr>
+            <tr data-so="6" data-label="Webinars" data-prop="Keep"><td>Webinars</td><td><span class="chip ok">Keep</span></td><td>Defined as a paid, sponsored or marketing-managed webinar, including registrations and attendees from a campaign. Without Category the name no longer says paid or organic, so this definition has to carry it.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Webinars"><label><input type="radio" name="so6" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so6" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note6" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Webinars" hidden></textarea></td></tr>
+            <tr data-so="7" data-label="Other" data-prop="Add"><td>Other</td><td><span class="chip">Add</span></td><td>It is in the old-value mapping but was never on the list. Add it as a real value, used only while the original source is being researched, and replaced once the real source is known.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Other"><label><input type="radio" name="so7" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so7" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note7" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Other" hidden></textarea></td></tr>
+            <tr data-so="8" data-label="Website Inquiry (old Salesforce value)" data-prop="Map to Website"><td>Website Inquiry (old Salesforce value)</td><td><span class="chip">Map</span> to Website</td><td>It was missing from the latest mapping. Website is the closest match, and the form name would identify the specific form, such as Request a Quote.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Website Inquiry (old Salesforce value)"><label><input type="radio" name="so8" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so8" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note8" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for Website Inquiry (old Salesforce value)" hidden></textarea></td></tr>
+            <tr data-so="9" data-label="The whole list in Figure 1" data-prop="17 values"><td>The whole list in Figure 1</td><td>17 values</td><td>Final list as shown, with the changes above.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for The whole list in Figure 1"><label><input type="radio" name="so9" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so9" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note9" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on for The whole list in Figure 1" hidden></textarea></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note-line"><strong>No written definition yet:</strong> Pay-Per-Lead, In-Platform, Employee Referral and Customer Referral. <strong>Not on the list:</strong> PunchOut e-procurement orders have no Lead Source value. That stays open, and attribution for PunchOut is phase 2.</p>
+
+      <p class="note-line">Your answers for every row on this page are sent together in one email from <a href="#send-decisions">Send your decisions</a> at the bottom of the page.</p>
+
+    </div>
 
     <div class="panel">
       <h3>Old Salesforce values to Lead Source</h3>
@@ -447,9 +490,9 @@
         <div class="retire-card"><span class="retire-old">Vendor</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Retired. Maps to Channel / Partner.</span></div>
         <div class="retire-card"><span class="retire-old">Third-Party Prospecting Data</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Retired. Maps to Prospecting (Outbound).</span></div>
         <div class="retire-card"><span class="retire-old">Customer Service</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Retired. Folded into whichever Lead Source it would otherwise belong to.</span></div>
-        <div class="retire-card keep"><span class="retire-old">Trade Show</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Kept as Tradeshow (see flag A).</span></div>
-        <div class="retire-card keep"><span class="retire-old">Other</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Kept as the catch-all, only when nothing else fits (see flag C).</span></div>
-        <div class="retire-card confirm"><span class="retire-old">Website Inquiry</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Not covered in the mapping so far. Expected to become Website. To confirm.</span></div>
+        <div class="retire-card keep"><span class="retire-old">Trade Show</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Kept as Tradeshow. Conference is merged into it.</span></div>
+        <div class="retire-card keep"><span class="retire-old">Other</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Kept as the catch-all, only when nothing else fits. Added to the list.</span></div>
+        <div class="retire-card confirm"><span class="retire-old">Website Inquiry</span><span class="retire-arrow">&#8594;</span><span class="retire-new">Not covered in the mapping so far. Proposed to become Website, for sign-off.</span></div>
       </div>
     </div>
   </section>
@@ -461,7 +504,7 @@
 
     <figure>
       <div class="scroll">
-        <svg viewBox="0 0 1280 548" role="img" aria-label="Two entry paths. Path A, web conversion: a UTM-tagged visit, the visitor converts, UTM values are captured, a mapping step whose rules are not decided and not built sets Lead Source and Lead Source Detail, and the record becomes visible to sales. Path B, imported or offline lead: an imported lead, Lead Source set manually, Lead Source Detail selected from the proposed picklist with choices still to be decided, membership in a specific campaign, and the record becomes visible to sales. Campaign membership on path B connects to a HubSpot campaign that is intended to match a Salesforce campaign one to one. Campaign identity is kept separate from the source fields.">
+        <svg viewBox="0 0 1280 548" role="img" aria-label="Two entry paths. Path A, web conversion: a UTM-tagged visit, the visitor converts, UTM values are captured, a mapping step whose rules are not decided and not built sets Lead Source and Lead Source Detail, and the record becomes visible to sales. Path B, imported or offline lead: an imported lead, Lead Source set manually, Lead Source Detail selected from the picklist with suggested choices to approve, membership in a specific campaign, and the record becomes visible to sales. Campaign membership on path B connects to a HubSpot campaign that is intended to match a Salesforce campaign one to one. Campaign identity is kept separate from the source fields.">
           <defs>
             <marker id="f2a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"/></marker>
             <marker id="f2o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--open)"/></marker>
@@ -528,9 +571,9 @@
           <line class="ln" x1="476" y1="320" x2="510" y2="320" marker-end="url(#f2a)"/>
 
           <rect class="bx-open" x="514" y="256" width="250" height="128" rx="8"/>
-          <text class="s-h c-open" x="528" y="284">DETAIL &middot; CHOICES TBD</text>
+          <text class="s-h c-open" x="528" y="284">DETAIL &middot; TO APPROVE</text>
           <text class="s-b" x="528" y="312">Picked from the</text>
-          <text class="s-b" x="528" y="334">proposed picklist,</text>
+          <text class="s-b" x="528" y="334">Detail picklist,</text>
           <text class="s-b" x="528" y="356">e.g. &ldquo;Trade Show&rdquo;</text>
           <line class="ln" x1="766" y1="320" x2="800" y2="320" marker-end="url(#f2a)"/>
 
@@ -581,30 +624,74 @@
 
     <div class="panel">
       <h3>UTM values to fields</h3>
-      <p>What each captured value would feed. Nothing is mapped yet. Rules need to be agreed before build.</p>
+      <p>What each captured value would feed, and what is still needed. Nothing here is built yet.</p>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Captured value</th><th>Feeds</th><th>Status</th></tr></thead>
+          <thead><tr><th>Captured value</th><th>Feeds</th><th>Status</th><th>What is needed</th></tr></thead>
           <tbody>
-            <tr><td><code>utm_source</code>, <code>utm_medium</code></td><td>Lead Source, through a lookup that turns source and medium into one Lead Source value.</td><td><span class="chip">TBD</span> lookup not drafted</td></tr>
-            <tr><td><code>utm_campaign</code></td><td>Lead Source Detail. One of the options for form-driven sources.</td><td><span class="chip">Open</span> not decided</td></tr>
-            <tr><td>Form name</td><td>Lead Source Detail. The other option, and it exists on every form conversion.</td><td><span class="chip">Open</span> not decided</td></tr>
-            <tr><td><code>utm_term</code>, <code>utm_content</code></td><td>Captured on the contact. No Lead Source or Detail target decided.</td><td><span class="chip">TBD</span></td></tr>
-            <tr><td><code>utm_audience</code></td><td>No HubSpot property exists yet. Target undecided.</td><td><span class="chip">TBD</span> property not created</td></tr>
+            <tr><td><code>utm_source</code>, <code>utm_medium</code></td><td>Lead Source, through a lookup that turns each source and medium pair into one Lead Source value.</td><td><span class="chip mute">Not built</span> direction agreed</td><td>A starter lookup is below. It needs approval and the full list of sources and mediums.</td></tr>
+            <tr><td><code>utm_campaign</code> or First Conversion (form name)</td><td>Lead Source Detail. Either one, or both.</td><td><span class="chip">Decision needed</span></td><td>Choose which one fills Detail for form-driven sources.</td></tr>
+            <tr><td><code>utm_term</code>, <code>utm_content</code></td><td>Captured on the contact. Nothing uses them yet.</td><td><span class="chip">Not decided</span></td><td>Decide whether either feeds a field, or leave them as captured only.</td></tr>
+            <tr><td><code>utm_audience</code></td><td>Nothing yet. No HubSpot property exists.</td><td><span class="chip mute">Not built</span></td><td>Create the property if it will be used.</td></tr>
+            <tr><td>Most-recent UTM values</td><td>New fields of their own, one for each UTM value. They do not feed Lead Source or Detail.</td><td><span class="chip mute">Not built</span> proposed</td><td>Create the fields and agree their names. See the explanation below.</td></tr>
           </tbody>
         </table>
       </div>
+      <p class="note-line"><strong>Not built:</strong> the work has not been done. <strong>Decision needed:</strong> a choice has to be made before it can be built. <strong>Not decided:</strong> there is no direction yet.</p>
+    </div>
+
+    <div class="panel">
+      <h3>First-touch and most-recent UTM values</h3>
+      <p>Each conversion that carries UTM values can be recorded twice: once to keep the first touch, and once to show the latest touch. The two sets sit in separate fields, so the latest touch never overwrites the first.</p>
+      <div class="cards">
+        <div class="card">
+          <h3>First-touch UTM values</h3>
+          <p class="q">What brought the lead in the first time?</p>
+          <ul>
+            <li><strong>Written:</strong> at the first conversion that carries UTM values, then kept.</li>
+            <li><strong>Used for:</strong> Lead Source, through the lookup below, and Detail if UTM values are chosen to fill it.</li>
+            <li><strong>Applies to:</strong> web conversions only. Imported leads have no UTM values.</li>
+          </ul>
+        </div>
+        <div class="card dashed">
+          <h3>Most-recent UTM values</h3>
+          <p class="q">What brought the lead back most recently?</p>
+          <ul>
+            <li><strong>Proposed:</strong> new fields, one for each UTM value. Names to be agreed. Not built.</li>
+            <li><strong>Written:</strong> at the first conversion, then overwritten at every later conversion that carries UTM values, so they always hold the latest touch.</li>
+            <li><strong>Used for:</strong> reporting on the latest touch. They do not change Lead Source or Detail.</li>
+            <li><strong>Proposed rule:</strong> if there are no UTM values on the latest conversion, the fields keep their last values.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Starter lookup: source and medium to Lead Source</h3>
+      <p>How a conversion with UTM values would get its Lead Source. The pairs below are examples from the UTM rules, not a complete list. Each pairing needs approval, and the full list of approved sources and mediums is still needed.</p>
+      <div class="tbl-wrap">
+        <table class="wide">
+          <thead><tr><th>utm_source</th><th>utm_medium</th><th>Lead Source</th><th>Sign-off</th></tr></thead>
+          <tbody>
+            <tr data-so="10" data-label="Lookup: linkedin + paid_social" data-prop="Paid Social"><td><code>linkedin</code></td><td><code>paid_social</code></td><td><span class="chip">Proposed</span> Paid Social<br><span style="font-size:13px;">LinkedIn paid ads are paid social.</span></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Lookup: linkedin + paid_social"><label><input type="radio" name="so10" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so10" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note10" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Lookup: linkedin + paid_social" hidden></textarea></td></tr>
+            <tr data-so="11" data-label="Lookup: google + paid_search" data-prop="Paid Search"><td><code>google</code></td><td><code>paid_search</code></td><td><span class="chip">Proposed</span> Paid Search<br><span style="font-size:13px;">Google paid search ads are paid search.</span></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Lookup: google + paid_search"><label><input type="radio" name="so11" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so11" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note11" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Lookup: google + paid_search" hidden></textarea></td></tr>
+            <tr data-so="12" data-label="Lookup: any + sponsored_content" data-prop="Pay-Per-Lead (to decide)"><td>any</td><td><code>sponsored_content</code></td><td><span class="chip">To decide</span> Pay-Per-Lead?<br><span style="font-size:13px;">Could also be Paid Social or Display, depending on who runs the placement.</span></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Lookup: any + sponsored_content"><label><input type="radio" name="so12" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so12" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note12" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Lookup: any + sponsored_content" hidden></textarea></td></tr>
+            <tr data-so="13" data-label="Lookup: email + nurture_email" data-prop="No change (to decide)"><td><code>email</code></td><td><code>nurture_email</code></td><td><span class="chip">To decide</span> No change?<br><span style="font-size:13px;">An email nurture reaches people who already have a Lead Source, so it may not be a source at all.</span></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Lookup: email + nurture_email"><label><input type="radio" name="so13" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so13" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note13" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Lookup: email + nurture_email" hidden></textarea></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note-line"><strong>Rules that go with the lookup:</strong> Lead Source is only set when it is empty, so the first touch is kept. A conversion with no UTM values becomes Website. A source and medium pair that is not in the lookup becomes Other, and is flagged so it can be researched and added.</p>
     </div>
   </section>
 
   <!-- ============ 3. DETAIL PICKLIST ============ -->
   <section class="sec">
     <h2>Lead Source Detail as a picklist</h2>
-    <p class="lead">Detail is proposed as a picklist so reports can filter by choosing a value, with no exact-text matching. The picklist choices, and the rule that picks one for each source, are not defined yet.</p>
+    <p class="lead">Detail is a picklist, so reports can filter by choosing a value, with no exact-text matching. The choices are suggested below for approval. The rule that picks one for web sources depends on the open decision further down. Who owns the list is not decided.</p>
 
     <figure>
       <div class="scroll">
-        <svg viewBox="0 0 1280 590" role="img" aria-label="How Lead Source Detail would get its value, by Lead Source. Five form-driven sources, Website, Paid Search, Paid Social, Webinars and Display, get Detail from a mapping rule that is still open: form name, utm_campaign, or both. Seven imported or offline sources are picked by hand from the picklist, with which choices apply still to be decided; for example Tradeshow uses the Detail Trade Show and the event is the campaign membership. Five sources have no path or Detail choice decided yet. All three feed one field, Lead Source Detail, a proposed picklist whose choices and owner are to be decided.">
+        <svg viewBox="0 0 1280 590" role="img" aria-label="How Lead Source Detail would get its value, by Lead Source. Five web sources, Website, Paid Search, Paid Social, Webinars and Paid Display, get Detail from a mapping rule that is still open: First Conversion, utm_campaign, or both. Three sources, Tradeshow, Prospecting (Outbound) and Channel / Partner, are picked by hand from the picklist; for example Tradeshow uses the Detail Trade show and the event is the campaign membership. Nine sources have no Detail value proposed because Lead Source and campaign already say it. The values feed one field, Lead Source Detail, a picklist whose suggested values are listed below and whose owner is to be decided.">
           <defs>
             <marker id="f3a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"/></marker>
             <marker id="f3w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--web)"/></marker>
@@ -617,7 +704,7 @@
           <line class="ln" x1="34" y1="80" x2="386" y2="80" style="stroke:var(--border)"/>
           <rect class="bx-open" x="34" y="98" width="352" height="100" rx="8"/>
           <text class="s-bb c-open" x="50" y="126">Rule still open</text>
-          <text class="s-b" x="50" y="152">Form name, utm_campaign,</text>
+          <text class="s-b" x="50" y="152">First Conversion, utm_campaign,</text>
           <text class="s-b" x="50" y="174">or both. Not decided.</text>
           <text class="s-b c-open" x="370" y="126" text-anchor="end">&#9888;</text>
           <text class="s-h c-mut" x="34" y="226">APPLIES TO</text>
@@ -626,40 +713,40 @@
             <rect class="bx" x="216" y="238" width="170" height="32" rx="6"/><text class="s-b" x="230" y="260">Paid Search</text>
             <rect class="bx" x="34" y="278" width="170" height="32" rx="6"/><text class="s-b" x="48" y="300">Paid Social</text>
             <rect class="bx" x="216" y="278" width="170" height="32" rx="6"/><text class="s-b" x="230" y="300">Webinars</text>
-            <rect class="bx" x="34" y="318" width="170" height="32" rx="6"/><text class="s-b" x="48" y="340">Display</text>
+            <rect class="bx" x="34" y="318" width="170" height="32" rx="6"/><text class="s-b" x="48" y="340">Paid Display</text>
           </g>
 
           <!-- Lane 2 -->
           <rect class="bx-imp" x="440" y="10" width="400" height="400" rx="12"/>
           <text class="s-h c-imp" x="464" y="44">SELECTED BY HAND</text>
-          <text class="s-s" x="464" y="66">imported or offline, picked from the picklist</text>
+          <text class="s-s" x="464" y="66">offline or sales-sourced, picked from the list</text>
           <line class="ln" x1="464" y1="80" x2="816" y2="80" style="stroke:var(--border)"/>
           <rect class="bx" x="464" y="98" width="352" height="96" rx="8"/>
           <text class="s-bb" x="480" y="124">Example: trade-show list</text>
-          <text class="s-b" x="480" y="150">Detail = &ldquo;Trade Show&rdquo;</text>
+          <text class="s-b" x="480" y="150">Detail = &ldquo;Trade show&rdquo;</text>
           <text class="s-b" x="480" y="172">Campaign membership = the event</text>
           <g>
-            <rect class="bx" x="464" y="212" width="170" height="32" rx="6"/><text class="s-b" x="478" y="234">Tradeshow</text>
-            <rect class="bx" x="646" y="212" width="170" height="32" rx="6"/><text class="s-b" x="660" y="234">Conference</text>
-            <rect class="bx" x="464" y="252" width="170" height="32" rx="6"/><text class="s-b" x="478" y="274">Purchased List</text>
-            <rect class="bx" x="646" y="252" width="170" height="32" rx="6"/><text class="s-b" x="660" y="274">Pay-Per-Lead</text>
-            <rect class="bx" x="464" y="292" width="170" height="32" rx="6"/><text class="s-b" x="478" y="314">Employee Referral</text>
-            <rect class="bx" x="646" y="292" width="170" height="32" rx="6"/><text class="s-b" x="660" y="314">Customer Referral</text>
-            <rect class="bx" x="464" y="332" width="170" height="32" rx="6"/><text class="s-b" x="478" y="354">Channel / Partner</text>
+            <rect class="bx" x="464" y="212" width="352" height="32" rx="6"/><text class="s-b" x="478" y="234">Tradeshow</text>
+            <rect class="bx" x="464" y="252" width="352" height="32" rx="6"/><text class="s-b" x="478" y="274">Prospecting (Outbound)</text>
+            <rect class="bx" x="464" y="292" width="352" height="32" rx="6"/><text class="s-b" x="478" y="314">Channel / Partner</text>
           </g>
-          <text class="s-s c-open" x="464" y="392">Which choices apply to each: TBD</text>
+          <text class="s-s c-open" x="464" y="356">Suggested values below, for approval</text>
 
           <!-- Lane 3 -->
           <rect class="bx-mute" x="870" y="10" width="400" height="400" rx="12"/>
-          <text class="s-h c-mut" x="894" y="44">NOT YET ASSIGNED</text>
-          <text class="s-s" x="894" y="66">no path or Detail choice decided</text>
+          <text class="s-h c-mut" x="894" y="44">NO DETAIL VALUE PROPOSED</text>
+          <text class="s-s" x="894" y="66">Lead Source and campaign already say it</text>
           <line class="ln" x1="894" y1="80" x2="1246" y2="80" style="stroke:var(--border)"/>
           <g>
-            <rect class="bx" x="894" y="98" width="352" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="910" y="120">Prospecting (Outbound)</text>
-            <rect class="bx" x="894" y="138" width="352" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="910" y="160">Organic Social</text>
-            <rect class="bx" x="894" y="178" width="352" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="910" y="200">Press Release</text>
-            <rect class="bx" x="894" y="218" width="352" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="910" y="240">Organic List</text>
-            <rect class="bx" x="894" y="258" width="352" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="910" y="280">In-Platform</text>
+            <rect class="bx" x="894" y="98" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="908" y="120">Purchased List</text>
+            <rect class="bx" x="1076" y="98" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="1090" y="120">Pay-Per-Lead</text>
+            <rect class="bx" x="894" y="138" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="908" y="160">Employee Referral</text>
+            <rect class="bx" x="1076" y="138" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="1090" y="160">Customer Referral</text>
+            <rect class="bx" x="894" y="178" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="908" y="200">Organic Social</text>
+            <rect class="bx" x="1076" y="178" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="1090" y="200">Press Release</text>
+            <rect class="bx" x="894" y="218" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="908" y="240">Organic List</text>
+            <rect class="bx" x="1076" y="218" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="1090" y="240">In-Platform</text>
+            <rect class="bx" x="894" y="258" width="170" height="32" rx="6" style="stroke-dasharray:3 3"/><text class="s-b" x="908" y="280">Other</text>
           </g>
 
           <!-- Converge -->
@@ -669,63 +756,85 @@
 
           <rect class="bx-ink" x="290" y="468" width="700" height="100" rx="12"/>
           <text class="s-t" x="640" y="508" text-anchor="middle">Lead Source Detail</text>
-          <text class="s-m c-mut" x="640" y="538" text-anchor="middle">proposed picklist &middot; choices and owner TBD</text>
+          <text class="s-m c-mut" x="640" y="538" text-anchor="middle">picklist &middot; values suggested below &middot; owner TBD</text>
         </svg>
       </div>
-      <figcaption><span class="fig-label">Figure 3</span>How Detail would get its value for each of the 17 Lead Source values. Five come from a mapping rule that is still open, seven are picked by hand at import or entry, and five have no path yet. The by-hand group carries over from the earlier design and needs confirming.</figcaption>
+      <figcaption><span class="fig-label">Figure 3</span>How Detail would get its value for each of the 17 Lead Source values. Five web sources get a value from a mapping rule that is still open, three are picked by hand, and nine have no Detail value proposed because Lead Source and campaign already say it.</figcaption>
     </figure>
 
     <div class="callout">
       <h3>Still open: what fills Detail for form-driven sources</h3>
-      <p>For Website, Paid Search, Paid Social, Webinars and Display, the possibilities include:</p>
+      <p>For Website, Paid Search, Paid Social, Webinars and Paid Display, the possibilities include:</p>
       <ul>
-        <li>the name of the form the lead converted on,</li>
+        <li>the HubSpot First Conversion value, which is the name of the form the lead first converted on,</li>
         <li>the <code>utm_campaign</code> value when one is present,</li>
         <li>or both.</li>
       </ul>
-      <p>A picklist also needs a fixed set of choices, so each possibility has to map onto that set. Who adds new choices as forms, vendors, and events appear is part of the same decision. Nothing is decided yet.</p>
+      <p>A picklist also needs a fixed set of choices, so each possibility has to map onto that set. Who adds new choices as forms, vendors, and events appear is part of the same decision. That the field is a picklist is decided. What fills it, and who owns the list, are not.</p>
     </div>
-  </section>
 
-  <!-- ============ 4. SALES RECORD ============ -->
-  <section class="sec">
-    <h2>What sales sees</h2>
-    <p class="lead">Both paths end on a lead or contact record that sales can see. The definitive list of attribution fields on those records has not been set, so this table lists only the fields this model creates, and every cell is to be confirmed.</p>
-
-    <div class="panel">
-      <h3>Sales record &middot; fields to confirm</h3>
+    <div class="panel" style="margin-top:18px;">
+      <h3>Suggested Lead Source Detail values</h3>
+      <p>Detail only gets a value where it adds something Lead Source and campaign do not already say. The web form values assume First Conversion fills Detail, which is still an open decision. If <code>utm_campaign</code> is chosen instead, the list would be campaigns, which change often and need someone to own the list.</p>
       <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Attribution field</th><th>On the lead record</th><th>On the contact record</th></tr></thead>
+        <table class="wide">
+          <thead><tr><th>Group</th><th>Lead Sources</th><th>Suggested values</th><th>Sign-off</th></tr></thead>
           <tbody>
-            <tr><td>Lead Source</td><td><span class="chip">To confirm</span></td><td><span class="chip">To confirm</span></td></tr>
-            <tr><td>Lead Source Detail</td><td><span class="chip">To confirm</span></td><td><span class="chip">To confirm</span></td></tr>
-            <tr><td>Campaign membership</td><td><span class="chip">To confirm</span></td><td><span class="chip">To confirm</span></td></tr>
-            <tr><td>Captured UTM values (web path only)</td><td><span class="chip">To confirm</span></td><td><span class="chip">To confirm</span></td></tr>
+            <tr data-so="14" data-label="Detail: web forms" data-prop="Web form values"><td>Web forms</td><td>Website, Paid Search, Paid Social, Paid Display, Webinars</td><td><div class="vals"><span>Request a Quote</span><span>Sample Request</span><span>Request an Account</span><span>Technical Inquiry</span><span>General Inquiry</span><span>Customer support request</span><span>Consultation or meeting</span><span>Promotion or rebate</span><span>Newsletter or community sign-up</span><span>Webinar registration</span><span>Other form</span></div></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Detail: web forms"><label><input type="radio" name="so14" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so14" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note14" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Detail: web forms" hidden></textarea></td></tr>
+            <tr data-so="15" data-label="Detail: events" data-prop="Event values"><td>Events</td><td>Tradeshow</td><td><div class="vals"><span>Trade show</span><span>Conference</span></div></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Detail: events"><label><input type="radio" name="so15" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so15" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note15" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Detail: events" hidden></textarea></td></tr>
+            <tr data-so="16" data-label="Detail: prospecting" data-prop="Prospecting values"><td>Prospecting</td><td>Prospecting (Outbound)</td><td><div class="vals"><span>Rep research</span><span>Third-party prospecting data</span></div></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Detail: prospecting"><label><input type="radio" name="so16" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so16" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note16" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Detail: prospecting" hidden></textarea></td></tr>
+            <tr data-so="17" data-label="Detail: partners" data-prop="Partner values"><td>Partners</td><td>Channel / Partner</td><td><div class="vals"><span>Distributor</span><span>Strategic partner</span><span>Manufacturer</span><span>Other channel partner</span></div></td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Detail: partners"><label><input type="radio" name="so17" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so17" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note17" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Detail: partners" hidden></textarea></td></tr>
+            <tr data-so="18" data-label="Detail: no value for the rest" data-prop="Left blank"><td>No Detail value</td><td>Purchased List, Pay-Per-Lead, Employee Referral, Customer Referral, Organic Social, Press Release, Organic List, In-Platform, Other</td><td>Left blank. Lead Source and the campaign already say it. The vendor for a purchased or pay-per-lead source is recorded on the campaign.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Detail: no value for the rest"><label><input type="radio" name="so18" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so18" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note18" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Detail: no value for the rest" hidden></textarea></td></tr>
+            <tr data-so="19" data-label="Detail: whole picklist" data-prop="All of the above"><td>The whole Detail picklist</td><td>All of the above</td><td>The groups and values as shown, with any changes.</td><td><div class="so-choice" role="radiogroup" aria-label="Sign-off for Detail: whole picklist"><label><input type="radio" name="so19" value="approve"><span class="yes">Approve</span></label><label><input type="radio" name="so19" value="change"><span class="chg">Change</span></label></div><textarea class="so-note" id="so-note19" rows="3" placeholder="Comments: what should change, and why?" aria-label="Comments on Detail: whole picklist" hidden></textarea></td></tr>
           </tbody>
         </table>
       </div>
-      <p style="margin:16px 0 0;">How these fields sync between HubSpot and Salesforce has not been set up.</p>
     </div>
+
+    <div class="panel" style="margin-top:18px;">
+      <h3>Lead Source Detail mapping: which forms set each Detail value</h3>
+      <p>This chart maps HubSpot forms to Lead Source Detail values, for the web sources (Website, Paid Search, Paid Social, Paid Display, Webinars). The form is the lead&rsquo;s First Conversion. The forms listed are those in the HubSpot portal on October 14, 2026. Each form would map to one Detail value, so a new form only needs a mapping, not a new value.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Lead Source Detail value</th><th>HubSpot form (First Conversion)</th></tr></thead>
+          <tbody>
+            <tr><td>Request a Quote</td><td>Website: Request a Quote</td></tr>
+            <tr><td>Sample Request</td><td>Website: Sample Request</td></tr>
+            <tr><td>Request an Account</td><td>Website: Request an Account</td></tr>
+            <tr><td>Technical Inquiry</td><td>Website: Technical Inquiry</td></tr>
+            <tr><td>General Inquiry</td><td>Website: General Inquiry</td></tr>
+            <tr><td>Customer support request</td><td>Website: Invoice Inquiry, Website: Tracking Number Inquiry, Website: RMA/Return, Website: Product Complaint, Website: Request Certificate of Analysis/MSDS</td></tr>
+            <tr><td>Consultation or meeting</td><td>Lab Consultation Lead Gen, qPCR Specialist Consultation, New Lab Start Up, Book meeting form, and the Meetings Link forms (one per rep)</td></tr>
+            <tr><td>Promotion or rebate</td><td>ABM Buzz Rebate Form</td></tr>
+            <tr><td>Newsletter or community sign-up</td><td>Sign up form, Genesee Community Signup Form</td></tr>
+            <tr><td>Webinar registration</td><td>No webinar form appears in the portal today. To confirm where registrations are captured.</td></tr>
+            <tr><td>Other form</td><td>Any form not listed. To confirm: High Performance Antibodies, Vendor Sales Opportunity Submission Form, [TS] - Lead Capture Form.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note-line"><strong>Worth noting:</strong> the Customer support request forms are service requests, not sales leads. A Detail value lets reports separate them from real inquiries.</p>
+    </div>
+
   </section>
 
   <!-- ============ 5. FIRST / LAST TOUCH ============ -->
   <section class="sec">
     <h2>First touch and last touch</h2>
-    <p class="lead">Phase 1 records the first touch only. Lead Source and Detail are set at the first conversion. Most-recent, or last-touch, attribution is deferred. It is not designed or built, and the diagram marks it only to show where phase 1 stops.</p>
+    <p class="lead">Lead Source and Lead Source Detail are first touch: set at the first conversion and kept. The latest touch is recorded separately, in proposed most-recent UTM fields that are overwritten at each later conversion. They do not change Lead Source. A last-touch Lead Source is deferred. It is not designed or built.</p>
 
     <figure>
       <div class="scroll">
-        <svg viewBox="0 0 1280 340" role="img" aria-label="A timeline of conversions. In phase 1, Lead Source and Lead Source Detail are set at the first conversion, which is a web form or an import. Later touches follow. Last-touch attribution for those later touches is deferred and not designed or built.">
+        <svg viewBox="0 0 1280 440" role="img" aria-label="A timeline of conversions. At the first conversion, Lead Source and Lead Source Detail are set and kept, and web conversions also keep the first-touch UTM values. Later touches follow. At each later conversion that carries UTM values, proposed most-recent UTM fields are overwritten, so they hold the latest touch. This is proposed and not built. A last-touch Lead Source is deferred and not designed or built, and the most-recent UTM values do not change Lead Source or Lead Source Detail.">
           <defs>
             <marker id="f4a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"/></marker>
             <marker id="f4w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--web)"/></marker>
+            <marker id="f4o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--open)"/></marker>
           </defs>
 
-          <rect class="bx-web" x="40" y="14" width="440" height="104" rx="10"/>
-          <text class="s-h c-web" x="58" y="42">PHASE 1 &middot; FIRST TOUCH</text>
-          <text class="s-b" x="58" y="70">Lead Source and Detail are set</text>
-          <text class="s-b" x="58" y="92">at the first conversion and kept.</text>
+          <rect class="bx-web" x="40" y="14" width="620" height="104" rx="10"/>
+          <text class="s-h c-web" x="58" y="42">FIRST TOUCH</text>
+          <text class="s-b" x="58" y="70">Lead Source and Detail are set at the first</text>
+          <text class="s-b" x="58" y="92">conversion and kept. Web conversions also keep UTMs.</text>
           <line class="ln-web" x1="220" y1="120" x2="220" y2="150" marker-end="url(#f4w)"/>
 
           <line class="ln" x1="40" y1="170" x2="1236" y2="170" marker-end="url(#f4a)"/>
@@ -740,84 +849,48 @@
           <circle class="dot-hol" cx="1040" cy="170" r="12"/>
           <text class="s-h c-mut" x="1040" y="146" text-anchor="middle">LATER TOUCH</text>
 
-          <line class="ln-mute" x1="640" y1="186" x2="640" y2="248" marker-end="url(#f4a)"/>
-          <line class="ln-mute" x1="1040" y1="186" x2="1040" y2="248" marker-end="url(#f4a)"/>
-          <rect class="bx-mute" x="500" y="254" width="740" height="72" rx="10"/>
-          <text class="s-h c-mut" x="520" y="282">DEFERRED &middot; LAST TOUCH</text>
-          <text class="s-b" x="520" y="308">Later touches do not change Lead Source in phase 1. Not designed or built.</text>
+          <line class="ln-open" x1="640" y1="186" x2="640" y2="258" marker-end="url(#f4o)"/>
+          <line class="ln-open" x1="1040" y1="186" x2="1040" y2="258" marker-end="url(#f4o)"/>
+          <rect class="bx-open" x="500" y="262" width="740" height="84" rx="10"/>
+          <text class="s-h c-open" x="520" y="290">MOST-RECENT UTM FIELDS &middot; PROPOSED, NOT BUILT</text>
+          <text class="s-b" x="520" y="316">Overwritten at each later conversion that carries UTM values,</text>
+          <text class="s-b" x="520" y="336">so they always hold the latest touch. Lead Source does not change.</text>
+
+          <line class="ln-mute" x1="870" y1="348" x2="870" y2="372" marker-end="url(#f4a)"/>
+          <rect class="bx-mute" x="500" y="376" width="740" height="52" rx="10"/>
+          <text class="s-h c-mut" x="520" y="398">DEFERRED &middot; LAST-TOUCH LEAD SOURCE</text>
+          <text class="s-b" x="520" y="419">Not designed or built.</text>
         </svg>
       </div>
-      <figcaption><span class="fig-label">Figure 4</span>Phase 1 stamps the first touch. Last-touch attribution is deferred and is not part of this design yet.</figcaption>
+      <figcaption><span class="fig-label">Figure 4</span>Lead Source and Detail keep the first touch. Proposed most-recent UTM fields record the latest touch without changing them. A last-touch Lead Source is deferred and is not part of this design yet.</figcaption>
     </figure>
   </section>
 
-  <!-- ============ 6. SOURCE VS INFLUENCE ============ -->
-  <section class="sec">
-    <h2>Lead source is not revenue influence</h2>
-    <p class="lead">This model answers where a lead came from. It does not connect a campaign to revenue, and no campaign-to-revenue path is drawn because none exists yet.</p>
-
-    <div class="cards">
-      <div class="card">
-        <h3>Lead source attribution</h3>
-        <p class="q">Where did this lead come from?</p>
-        <ul>
-          <li><strong>Uses:</strong> Lead Source, Lead Source Detail, and campaign membership.</li>
-          <li><strong>Where it shows:</strong> lead and contact records (fields to confirm).</li>
-          <li><strong>Status:</strong> this proposal. Not built.</li>
-        </ul>
-      </div>
-      <div class="card dashed">
-        <h3>Revenue and marketing influence</h3>
-        <p class="q">Did marketing touches line up with orders?</p>
-        <ul>
-          <li>Direct, opportunity-based revenue attribution is not available today.</li>
-          <li><strong>Interim idea under discussion:</strong> total orders per lab account, compared against marketing touches. Manual reports are acceptable for now.</li>
-          <li><strong>Influence window:</strong> TBD. Orders are transactional, so it may be shorter than a typical B2B cycle.</li>
-          <li><strong>PunchOut orders:</strong> attribution is phase 2.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 7. OPEN ============ -->
-  <section class="sec">
-    <h2>Open before build</h2>
-    <div class="callout">
-      <h3>Open / validate before build</h3>
-      <div class="open-grid">
-        <div>
-          <h4>Capturing UTMs</h4>
-          <ul>
-            <li>UTM persistence on the main BigCommerce site: whether a cookie already stores UTMs, and how those values get into HubSpot.</li>
-            <li>Formstack forms and the BigCommerce checkout do not pass UTM values to HubSpot today. The checkout&rsquo;s form tracking would also need to be rebuilt first.</li>
-          </ul>
+  <!-- ============ 8. SEND ============ -->
+  <section class="sec" id="send-decisions">
+    <h2>Send your decisions</h2>
+    <p class="lead">This one email sends every decision on the page: each Approve or Change, each comment, and any other comments below. That covers the Lead Source list, the UTM lookup and the Lead Source Detail values. Please answer every row above first, then send once.</p>
+    <div class="panel">
+        <div class="so-send" style="margin-top:0;padding-top:0;border-top:0;">
+          <p class="so-progress" id="so-progress" role="status" aria-live="polite"></p>
+          <div>
+            <label class="lbl" for="so-name">Your name</label>
+            <input type="text" class="so-field" id="so-name" autocomplete="name">
+          </div>
+          <div>
+            <label class="lbl" for="so-extra">Other comments on any part of the page (optional)</label>
+            <textarea class="so-area" id="so-extra"></textarea>
+          </div>
+          <div class="so-btns">
+            <button type="button" class="so-btn" id="so-send">Send all decisions by email</button>
+            <button type="button" class="so-btn alt" id="so-copy">Copy all decisions as text</button>
+          </div>
+          <p class="so-status" id="so-status" role="status" aria-live="polite">The button opens one new email to Rob Walter with every decision and comment from this page filled in. You will still need to press Send in your email app.</p>
+          <details class="so-prev">
+            <summary>See everything that will be sent</summary>
+            <textarea class="so-area" id="so-preview" readonly aria-label="Message preview"></textarea>
+          </details>
         </div>
-        <div>
-          <h4>Lead Source Detail</h4>
-          <ul>
-            <li>The exact picklist choices, and who owns the list as new forms, vendors, and events appear.</li>
-            <li>What fills Detail for form-driven sources: form name, <code>utm_campaign</code>, or both.</li>
-            <li>Whether Content Type stays as its own field next to Detail.</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Mapping and records</h4>
-          <ul>
-            <li>The UTM-to-Lead Source mapping table is not drafted, and <code>utm_audience</code> has no HubSpot property yet.</li>
-            <li>The review flags on the Lead Source list, and the five sources with no Detail path yet.</li>
-            <li>Which attribution fields appear on lead and contact records, and how they sync.</li>
-            <li>The intended 1:1 match between HubSpot and Salesforce campaigns is not verified or built.</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Build and reporting</h4>
-          <ul>
-            <li>Where to build: which HubSpot portal, and whether Salesforce changes the existing Lead Source picklist or adds a new field.</li>
-            <li>PunchOut orders have no Lead Source value, and their attribution is phase 2.</li>
-            <li>The influence window for order correlation.</li>
-          </ul>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -825,6 +898,116 @@
     This is a proposed design and nothing on this page is built. Amber dashed items are open, not decided, or not built.
   </footer>
 </div>
+
+<script>
+(function () {
+  var TO = "rob.walter@groundteam.com";
+  var rows = Array.prototype.slice.call(document.querySelectorAll("[data-so]"));
+  var nameEl = document.getElementById("so-name");
+  var extraEl = document.getElementById("so-extra");
+  var prevEl = document.getElementById("so-preview");
+  var statusEl = document.getElementById("so-status");
+  if (!rows.length || !prevEl) return;
+
+  function answer(tr) {
+    var i = tr.getAttribute("data-so");
+    var picked = tr.querySelector('input[name="so' + i + '"]:checked');
+    var note = document.getElementById("so-note" + i);
+    if (!picked) return "NO ANSWER";
+    if (picked.value === "approve") return "APPROVE";
+    var t = note && note.value.trim().replace(/\s+/g, " ");
+    return t ? "CHANGE: " + t : "CHANGE";
+  }
+
+  function answered() { return rows.filter(function (tr) { return answer(tr) !== "NO ANSWER"; }).length; }
+  var progEl = document.getElementById("so-progress");
+  function progress() {
+    var n = answered(), left = rows.length - n;
+    progEl.textContent = n + " of " + rows.length + " decisions answered" + (left ? ". " + left + " still to answer above." : ". All answered.");
+    progEl.className = "so-progress" + (left ? "" : " done");
+  }
+
+  function build() {
+    var lines = ["Lead Source Field Model: all sign-off decisions (" + answered() + " of " + rows.length + " answered)", "From: " + (nameEl.value.trim() || "(name not given)"), ""];
+    rows.forEach(function (tr, k) {
+      lines.push((k + 1) + ". " + tr.getAttribute("data-label") + " (" + tr.getAttribute("data-prop") + "): " + answer(tr));
+    });
+    var extra = extraEl.value.trim();
+    if (extra) { lines.push("", "Other comments: " + extra); }
+    return lines.join("\n");
+  }
+
+  function refresh() { prevEl.value = build(); progress(); }
+
+  function say(msg, isErr) {
+    statusEl.textContent = msg;
+    statusEl.className = "so-status" + (isErr ? " err" : "");
+  }
+
+  rows.forEach(function (tr) {
+    var i = tr.getAttribute("data-so");
+    var note = document.getElementById("so-note" + i);
+    Array.prototype.forEach.call(tr.querySelectorAll('input[type="radio"]'), function (r) {
+      r.addEventListener("change", function () {
+        note.hidden = r.value !== "change" || !r.checked;
+        if (!note.hidden) note.focus();
+        refresh();
+      });
+    });
+    note.addEventListener("input", refresh);
+  });
+  nameEl.addEventListener("input", refresh);
+  extraEl.addEventListener("input", refresh);
+
+  function check() {
+    if (!nameEl.value.trim()) { say("Please add your name first.", true); nameEl.focus(); return false; }
+    var open = rows.filter(function (tr) { return answer(tr) === "NO ANSWER"; }).length;
+    if (open === rows.length) { say("Choose Approve or Change for at least one row above first.", true); return false; }
+    return true;
+  }
+
+  document.getElementById("so-send").addEventListener("click", function () {
+    refresh();
+    if (!check()) return;
+    var body = prevEl.value;
+    var url = "mailto:" + TO + "?subject=" + encodeURIComponent("Lead Source Field Model sign-off: " + nameEl.value.trim()) + "&body=" + encodeURIComponent(body);
+    if (url.length > 1900) {
+      var shortUrl = "mailto:" + TO + "?subject=" + encodeURIComponent("Lead Source Field Model sign-off: " + nameEl.value.trim()) + "&body=" + encodeURIComponent("(Paste your answers here.)");
+      var done = function (ok) {
+        say(ok ? "Your answers are long, so they were copied. Paste them into the email that opens." : "Your answers are long. Use Copy as text, then paste them into an email to Rob Walter.", !ok);
+        if (ok) window.location.href = shortUrl;
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(body).then(function () { done(true); }, function () { done(false); });
+      } else { done(false); }
+      return;
+    }
+    window.location.href = url;
+    var left = rows.filter(function (tr) { return answer(tr) === "NO ANSWER"; }).length;
+    say("If a new email did not open, use Copy as text and paste it into an email to Rob Walter." + (left ? " " + left + " row" + (left === 1 ? " has" : "s have") + " no answer yet." : ""));
+  });
+
+  document.getElementById("so-copy").addEventListener("click", function () {
+    refresh();
+    if (!check()) return;
+    var text = prevEl.value;
+    function fallback() {
+      prevEl.removeAttribute("readonly"); prevEl.focus(); prevEl.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      prevEl.setAttribute("readonly", "");
+      say(ok ? "Copied. Paste it into an email to Rob Walter." : "Select the text under See what will be sent and copy it into an email to Rob Walter.", !ok);
+      if (!ok) prevEl.closest("details").open = true;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { say("Copied. Paste it into an email to Rob Walter."); }, fallback);
+    } else { fallback(); }
+  });
+
+  refresh();
+})();
+</script>
+
 
 </body>
 </html>
